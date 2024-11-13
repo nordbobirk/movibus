@@ -100,3 +100,29 @@ insert into phone_number (card_id, phone_number) values
 ('3467034670', "76548203"),
 ('4654646546', "81247504"),
 ('9128591285', "91328503");
+
+insert into bus_stop (latitude, longitude, stop_name) values
+("55.826205", "12.319242", 'Gunther Street'),    
+("55.846256", "12.414063", 'Joshua Street'),
+("55.852423", "12.353598", 'Janice Street'),
+("55.824893", "12.220631", 'Mike Street'),
+("55.786303", "12.206889", 'Janine Street'),
+("55.838776", "12.476234", 'Richard Street'),
+("55.726027", "12.531202", 'Carol Street'),
+("55.695080", "12.314077", 'David Street'),
+("55.715198", "12.237122", 'Paul Street'),
+("55.815635", "12.492725", 'Ben Street'),
+("55.826401", "12.319674", 'Tag Street'),
+("55.846501", "12.414829", 'Jack Street'),
+("55.852601", "12.353293", 'Emily Street'),
+("55.824701", "12.220951", 'Elizabeth Street'),
+("55.786801", "12.206395", 'Kathy Street'),
+("55.838901", "12.476012", 'Eddie Street'),
+("55.726906", "12.531750", 'Frank Street'),
+("55.695909", "12.314104", 'Susie Street'),
+("55.715990", "12.237105", 'Pete Street'),
+("55.815997", "12.492073", 'Estelle Street');
+
+insert into stops_at (line_name, stop_index, latitude, longitude) values
+(),
+();
