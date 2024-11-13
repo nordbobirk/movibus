@@ -25,6 +25,7 @@ end//
 DELIMITER ;
 
 # A function that gets the index of the last stop of a line
+drop function if exists LastStopIndex;
 DELIMITER //
 create function LastStopIndex(line_name varchar(4)) returns int
 begin
