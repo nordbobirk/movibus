@@ -79,15 +79,15 @@ insert busline values (
 );
 
 insert into passenger (card_id, email, first_name, last_name) values
-(),
-(),
-(),
-(),
-(),
-(),
-(),
-(),
-(),
-(),
-(),
-();
+	('1234512345', 'joey.tribbiani@gmail.com', 'Joey', 'Tribbiani'),
+    ('1212112121', 'chandler.bing@gmail.com', 'Chandler', 'Bing'),
+    ('6767667676', 'ross.geller@gmail.com', 'Ross', 'Geller'),
+    ('3232332323', 'phoebe.buffay@gmail.com', 'Phoebe', 'Buffay'),
+    ('4575045750', 'rachel.green@gmail.com', 'Rachel', 'Green'),
+    ('9830298302', 'monica.geller@gmail.com', 'Monica', 'Geller'),
+	('1396413964', 'matt.leblanc@gmail.com', 'Matt', 'LeBlanc'),
+    ('8686886868', 'matthew.perry@gmail.com', 'Matthew', 'Perry'),
+    ('1289012890', 'david.schwimmer@gmail.com', 'David', 'Schwimmer'),
+    ('3467034670', 'jennifer.aniston@gmail.com', 'Jennifer', 'Aniston'),
+    ('4654646546', 'courteney.cox@gmail.com', 'Courteney', 'Cox'),
+    ('9128591285', 'lisa.kudrow@gmail.com', 'Lisa', 'Kudrow');
