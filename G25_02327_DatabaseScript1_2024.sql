@@ -71,19 +71,19 @@ insert bus_line values
 ("550H"),
 ("280K");
 
-insert into passenger (card_id, email, first_name, last_name) values
-	('1234512345', 'joey.tribbiani@gmail.com', 'Joey', 'Tribbiani'),
-    ('1212112121', 'chandler.bing@gmail.com', 'Chandler', 'Bing'),
-    ('6767667676', 'ross.geller@gmail.com', 'Ross', 'Geller'),
-    ('3232332323', 'phoebe.buffay@gmail.com', 'Phoebe', 'Buffay'),
-    ('4575045750', 'rachel.green@gmail.com', 'Rachel', 'Green'),
-    ('9830298302', 'monica.geller@gmail.com', 'Monica', 'Geller'),
-	('1396413964', 'matt.leblanc@gmail.com', 'Matt', 'LeBlanc'),
-    ('8686886868', 'matthew.perry@gmail.com', 'Matthew', 'Perry'),
-    ('1289012890', 'david.schwimmer@gmail.com', 'David', 'Schwimmer'),
-    ('3467034670', 'jennifer.aniston@gmail.com', 'Jennifer', 'Aniston'),
-    ('4654646546', 'courteney.cox@gmail.com', 'Courteney', 'Cox'),
-    ('9128591285', 'lisa.kudrow@gmail.com', 'Lisa', 'Kudrow');
+insert into passenger (card_id, email, first_name, last_name, street_name, civic_number, zip_code, country) values
+	('1234512345', 'joey.tribbiani@gmail.com', 'Joey', 'Tribbiani', 'Sandwichvej', '10', '2480', 'Nulland'),
+    ('1212112121', 'chandler.bing@gmail.com', 'Chandler', 'Bing', 'Sarcasm Street', '15', '3460', 'Nulland'),
+    ('6767667676', 'ross.geller@gmail.com', 'Ross', 'Geller', 'Ona Breakway', '20', '4500', 'Nulland'),
+    ('3232332323', 'phoebe.buffay@gmail.com', 'Phoebe', 'Buffay', 'Central Perk Boulevard', '25', '1348', 'Nulland'),
+    ('4575045750', 'rachel.green@gmail.com', 'Rachel', 'Green', 'Bloomingdales', '30', '5670', 'Nulland'),
+    ('9830298302', 'monica.geller@gmail.com', 'Monica', 'Geller', 'Clean Route', '35', '2934', 'Nulland'),
+	('1396413964', 'matt.leblanc@gmail.com', 'Matt', 'LeBlanc', 'Sandwichvej', '40', '2480', 'Nulland'),
+    ('8686886868', 'matthew.perry@gmail.com', 'Matthew', 'Perry', 'Sarcasm Street', '45', '3460', 'Nulland'),
+    ('1289012890', 'david.schwimmer@gmail.com', 'David', 'Schwimmer', 'Ona Breakway', '50', '4500', 'Nulland'),
+    ('3467034670', 'jennifer.aniston@gmail.com', 'Jennifer', 'Aniston', 'Bloomingdales', '55', '5670', 'Nulland'),
+    ('4654646546', 'courteney.cox@gmail.com', 'Courteney', 'Cox', 'Clean Route', '60', '2934', 'Nulland'),
+    ('9128591285', 'lisa.kudrow@gmail.com', 'Lisa', 'Kudrow', 'Central Perk Boulevard', '65', '1348', 'Nulland');
     
 insert into phone_number (card_id, phone_number) values
 ('1234512345', "20782313"),
@@ -100,7 +100,3 @@ insert into phone_number (card_id, phone_number) values
 ('3467034670', "76548203"),
 ('4654646546', "81247504"),
 ('9128591285', "91328503");
-
-insert into stops_at values
-(),
-();
