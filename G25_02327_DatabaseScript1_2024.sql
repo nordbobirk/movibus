@@ -64,12 +64,7 @@ insert bus_line values
 ("350A"),
 ("300S"),
 ("700D"),
-("690E"),
-("420S"),
-("860R"),
-("105T"),
-("550H"),
-("280K");
+("690E");
 
 insert into passenger (card_id, email, first_name, last_name, street_name, civic_number, zip_code, country) values
 	('1234512345', 'joey.tribbiani@gmail.com', 'Joey', 'Tribbiani', 'Sandwichvej', '10', '2480', 'Nulland'),
