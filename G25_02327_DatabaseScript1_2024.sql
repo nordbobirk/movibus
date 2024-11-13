@@ -12,6 +12,10 @@ card_id char(10) not null,
 email varchar(30) not null,
 first_name varchar(30) not null,
 last_name varchar(30) not null,
+street_name varchar(50) not null,
+civic_number varchar(10) not null,
+zip_code varchar(10) not null,
+country varchar(10) not null,
 primary key(card_id)
 );
 
@@ -20,16 +24,6 @@ phone_number char(8) not null,
 card_id char(10) not null,
 primary key(phone_number, card_id),
 foreign key(card_id) references passenger(card_id) on delete cascade
-);
-
-create table address (
-card_id char(10) not null,
-street_name varchar(50) not null,
-civic_number varchar(10) not null,
-zip_code varchar(10) not null,
-country varchar(10) not null,
-primary key(card_id),
-foreign key(card_id) references passenger(card_id) on delete cascade 
 );
 
 create table bus_stop (
@@ -106,3 +100,7 @@ insert into phone_number (card_id, phone_number) values
 ('3467034670', "76548203"),
 ('4654646546', "81247504"),
 ('9128591285', "91328503");
+
+insert into stops_at values
+(),
+();
