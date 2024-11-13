@@ -65,18 +65,17 @@ foreign key(latitude, longitude) references bus_stop(latitude, longitude) on del
 foreign key(line_name) references bus_line(line_name) on delete cascade
 );
 
-insert busline values (
-"500S",
-"350A",
-"300S",
-"700D",
-"690E",
-"420S",
-"860R",
-"105T",
-"550H",
-"280K"
-);
+insert bus_line values 
+("500S"),
+("350A"),
+("300S"),
+("700D"),
+("690E"),
+("420S"),
+("860R"),
+("105T"),
+("550H"),
+("280K");
 
 insert into passenger (card_id, email, first_name, last_name) values
 	('1234512345', 'joey.tribbiani@gmail.com', 'Joey', 'Tribbiani'),
