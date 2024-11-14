@@ -3,7 +3,7 @@ use movibus;
 # 1 triggers to handle constraints on index in StopsAt for insert/update/delete queries
 # 2 table modification examples for insert/update/delete
 # 3 DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
-# 4 Show the name of the bus stop served by most lines.
+# 4 DONE Show the name of the bus stop served by most lines.
 # 5 DONE For each line, show the ID of the passenger who took the ride that lasted longer.
 # 6 Show the ID of the passengers who never took a bus line more than once per day.
 # 7 DONE Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
@@ -28,6 +28,16 @@ stop_index = 1;
 
 #################################################################################################
 
+# 4 Show the name of the bus stop served by most lines.
+# As coordinates match in bus_stop and stops_at we use natural join and then count(stop_name) to find the most used stops. which we named most_used in this example.
+select stop_name, count(stop_name) as most_used from bus_stop natural join stops_at group by stop_name order by most_used desc;
+# Then we add a limit of 1 to only get the most used.
+  
+#code
+select stop_name, count(stop_name) as most_used from Bus_stop natural join stops_at group by stop_name order by most_used desc limit 1;
+  
+#################################################################################################
+  
 # 5 For each line, show the ID of the passenger who took the ride that lasted longer.
 #tested with
 insert into bus_ride values('1234512345', '500S', '2024-11-14 13:50:00', '2024-11-14 13:55:00', '55.826205', '12.319242', '55.846256', '12.414063');
