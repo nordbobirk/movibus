@@ -2,7 +2,7 @@ use movibus;
 
 # triggers to handle constraints on index in StopsAt for insert/update/delete queries
 # table modification examples for insert/update/delete
-# Show the ID of the passengers who took a ride from the first stop of the line taken.
+# DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
 # Show the name of the bus stop served by most lines.
 # For each line, show the ID of the passenger who took the ride that lasted longer.
 # Show the ID of the passengers who never took a bus line more than once per day.
@@ -18,11 +18,20 @@ drop function if exists PassengersFromFirstStop;
 DELIMITER //
 create function PassengersFromFirstStop(line_name varchar(4)) returns char(10)
 begin
-return (select card_id from bus_ride where 
-bus_ride.first_stop_latitude = (select latitude from stops_at where stops_at.line_name = line_name and stop_index = 1) 
-and bus_ride.first_stop_longitude = (select longitude from stops_at where stops_at.line_name = line_name and stop_index = 1));
+# here we use an inner join and NOT natural join, because attributes that are conceptually the same have different names
+return (select card_id from bus_ride join stops_at where 
+bus_ride.line_name = stops_at.line_name and 
+bus_ride.line_name = line_name and 
+first_stop_latitude = latitude and 
+first_stop_longitude = longitude and
+stop_index = 1);
 end//
 DELIMITER ;
+
+# This can be used thus
+select PassengersFromFirstStop("350A");
+
+#################################################################################################
 
 # A function that gets the index of the last stop of a line
 drop function if exists LastStopIndex;
@@ -34,15 +43,17 @@ end//
 DELIMITER ;
 
 # A procedure that gets the coordinates of the last stop of a line
+drop procedure if exists LastStopCoordinates;
 DELIMITER //
 create procedure LastStopCoordinates(in line_name varchar(4), out last_stop_latitude char(9), out last_stop_longitude char(9))
 begin
-declare last_stop_index int;
-select max(stop_index) into last_stop_index from stops_at where stops_at.line_name = line_name;
-select latitude into last_stop_latitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = last_stop_index;
-select longitude into last_stop_longitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = last_stop_index;
+select latitude into last_stop_latitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = (select LastStopIndex(line_name));
+select longitude into last_stop_longitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = (select LastStopIndex(line_name));
 end//
 DELIMITER ;
+
+#define x char(9);
+call LastStopCoordinates("500S");
 
 # A function that tells us whether a stop is served by some line
 DELIMITER //
