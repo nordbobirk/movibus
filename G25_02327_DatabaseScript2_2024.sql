@@ -5,7 +5,7 @@ use movibus;
 # 3 DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
 # 4 DONE Show the name of the bus stop served by most lines.
 # 5 DONE For each line, show the ID of the passenger who took the ride that lasted longer.
-# 6 Show the ID of the passengers who never took a bus line more than once per day.
+# 6 DONE Show the ID of the passengers who never took a bus line more than once per day.
 # 7 DONE Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
 # 8 a function that takes two stops and shows how many liens serve both stops
 # 9 a procedure that given a line and stop adds the stop to that line (after the last stop) if not already served by that line
@@ -47,6 +47,19 @@ insert into bus_ride values('6767667676', '350A', '2024-11-14 13:50:00', '2024-1
 #code
 select card_id, line_name, max(timediff(end_time, start_time)) as duration from bus_ride group by line_name;
 
+#################################################################################################
+
+# 6 Show the ID of the passengers who never took a bus line more than once per day.
+#I have grouped by card_id even though it is the only thing shown to order card_id numerically
+#tested with
+insert into bus_ride values('1234512345', '500S', '2024-11-14 13:50:00', '2024-11-14 13:55:00', '55.826205', '12.319242', '55.846256', '12.414063');
+insert into bus_ride values('1234512345', '500S', '2024-11-14 14:50:00', '2024-11-14 14:55:00', '55.846256', '12.414063', '55.826205', '12.319242');
+insert into bus_ride values('1212112121', '500S', '2024-11-14 13:50:00', '2024-11-14 13:52:00', '55.826205', '12.319242', '55.846256', '12.414063');
+insert into bus_ride values('6767667676', '350A', '2024-11-14 13:50:00', '2024-11-14 13:57:00', '55.826205', '12.319242', '55.846256', '12.414063');
+
+#code
+select card_id from bus_ride natural join passenger group by card_id having count(card_id) = 1;
+  
 #################################################################################################
 
 # 7 Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
