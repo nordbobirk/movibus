@@ -9,7 +9,7 @@ use movibus;
 # 7 DONE Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
 # 8 a function that takes two stops and shows how many liens serve both stops
 # 9 a procedure that given a line and stop adds the stop to that line (after the last stop) if not already served by that line
-# 10 a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
+# 10 DONE a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
 # illustrative examples of all of the above
 
 #################################################################################################
@@ -111,3 +111,24 @@ DELIMITER ;
 
 select * from stops_at natural join bus_stop order by line_name asc, stop_index asc;
 call AddStopToLine("300S", "55.715321", "12.337132");
+
+#################################################################################################
+
+# 10 a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
+#Checks whether the latitude/longitude is the same for the start/end stop and uses our function 'StopServedByLine' to check if the stop is on that particular line. Though that is actually not needed as foreign 
+#key constrains prevent inserting coordinates in Bus_ride that is not served by the concerning line.
+#Only works if the function "# A function that tells us whether a stop is served by some line" is created. Tested with:
+insert into bus_ride values('3232332323', '500S', '2024-11-14 13:50:00', '2024-11-14 13:55:00', '55.826205', '12.319242', '55.826205', '12.319242');
+
+#code
+drop trigger if exists wrongstop;
+delimiter //
+create trigger wrongstop
+before insert on bus_ride for each row
+begin
+ if (new.first_stop_latitude = new.last_stop_latitude and new.first_stop_longitude = new.last_stop_longitude)
+ or StopServedByLine(new.last_stop_latitude, new.first_stop_longitude, new.line_name) 
+ then signal sqlstate "HY000" set mysql_errno = 1525, message_text = "Cannot start and end a ride on the same stop, or at a stop not served by that line.";
+ end if;
+ end //
+ delimiter ;
