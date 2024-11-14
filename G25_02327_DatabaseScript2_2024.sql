@@ -4,7 +4,7 @@ use movibus;
 # table modification examples for insert/update/delete
 # DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
 # Show the name of the bus stop served by most lines.
-# For each line, show the ID of the passenger who took the ride that lasted longer.
+# DONE For each line, show the ID of the passenger who took the ride that lasted longer.
 # Show the ID of the passengers who never took a bus line more than once per day.
 # Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
 # a function that takes two stops and shows how many liens serve both stops
@@ -25,6 +25,17 @@ bus_ride.line_name = @q1_line_name and
 first_stop_latitude = latitude and 
 first_stop_longitude = longitude and
 stop_index = 1;
+
+#################################################################################################
+
+# For each line, show the ID of the passenger who took the ride that lasted longer.
+#tested with
+insert into bus_ride values('1234512345', '500S', '2024-11-14 13:50:00', '2024-11-14 13:55:00', '55.826205', '12.319242', '55.846256', '12.414063');
+insert into bus_ride values('1212112121', '500S', '2024-11-14 13:50:00', '2024-11-14 13:52:00', '55.826205', '12.319242', '55.846256', '12.414063');
+insert into bus_ride values('6767667676', '350A', '2024-11-14 13:50:00', '2024-11-14 13:57:00', '55.826205', '12.319242', '55.846256', '12.414063');
+
+#code
+select card_id, line_name, max(timediff(end_time, start_time)) as duration from bus_ride group by line_name;
 
 #################################################################################################
 
