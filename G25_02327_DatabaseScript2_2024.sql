@@ -56,9 +56,11 @@ insert into bus_ride values('1234512345', '500S', '2024-11-14 13:50:00', '2024-1
 insert into bus_ride values('1234512345', '500S', '2024-11-14 14:50:00', '2024-11-14 14:55:00', '55.846256', '12.414063', '55.826205', '12.319242');
 insert into bus_ride values('1212112121', '500S', '2024-11-14 13:50:00', '2024-11-14 13:52:00', '55.826205', '12.319242', '55.846256', '12.414063');
 insert into bus_ride values('6767667676', '350A', '2024-11-14 13:50:00', '2024-11-14 13:57:00', '55.826205', '12.319242', '55.846256', '12.414063');
+insert into bus_ride values('1234512345', '500S', '2024-11-15 13:50:00', '2024-11-15 13:55:00', '55.826205', '12.319242', '55.846256', '12.414063');
 
 #code
-select card_id from bus_ride natural join passenger group by card_id having count(card_id) = 1;
+select CAST(start_time AS DATE) as date, card_id from bus_ride GROUP BY CAST(start_time AS DATE), card_id having count(card_id) = 1;
+
   
 #################################################################################################
 
