@@ -65,12 +65,25 @@ select CAST(start_time AS DATE) as date, card_id from bus_ride GROUP BY CAST(sta
 #################################################################################################
 
 # 7 Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
+#code for unused stops.
+select stop_name from Bus_stop natural left join stops_at where line_name is null;
+
 #tested with
 select * from Bus_stop natural left join stops_at;
 #to see which stops are never used, that is where line_name is null.
+  
 
-#code
-select stop_name from Bus_stop natural left join stops_at where line_name is null;
+#code for where stops where no passengers started or ended their ride.
+select stop_name from bus_stop left join bus_ride 
+on bus_ride.first_stop_latitude = bus_stop.latitude and bus_ride.first_stop_longitude = bus_stop.longitude 
+or bus_ride.last_stop_latitude = bus_stop.latitude and bus_ride.last_stop_longitude = bus_stop.longitude
+where card_id is null;
+
+#tested with
+select * from bus_stop 
+left join bus_ride 
+on bus_ride.first_stop_latitude = bus_stop.latitude and bus_ride.first_stop_longitude = bus_stop.longitude 
+or bus_ride.last_stop_latitude = bus_stop.latitude and bus_ride.last_stop_longitude = bus_stop.longitude;
 
 #################################################################################################
 
