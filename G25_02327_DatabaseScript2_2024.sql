@@ -77,7 +77,8 @@ select * from Bus_stop natural left join stops_at;
 select stop_name from bus_stop left join bus_ride 
 on bus_ride.first_stop_latitude = bus_stop.latitude and bus_ride.first_stop_longitude = bus_stop.longitude 
 or bus_ride.last_stop_latitude = bus_stop.latitude and bus_ride.last_stop_longitude = bus_stop.longitude
-where card_id is null;
+where card_id is null
+group by stop_name;
 
 #tested with
 select * from bus_stop 
