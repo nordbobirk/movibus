@@ -1,12 +1,12 @@
 use movibus;
 
-# 1 Triggers to handle indexes of bus stops
+# 1 DONE Triggers to handle indexes of bus stops
 # 2 table modification examples for insert/update/delete
 # 3 DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
 # 4 DONE Show the name of the bus stop served by most lines.
 # 5 DONE For each line, show the ID of# 3 Show the ID of the passengers who took a ride from the first stop of a given line
-# 6 DONE Show the ID of the passengers who never took a bus line more than once per day.
-# 7 DONE Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
+# 6 Show the ID of the passengers who never took a bus line more than once per day.
+# 7 Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
 # 8 a function that takes two stops and shows how many liens serve both stops
 # 9 a procedure that given a line and stop adds the stop to that line (after the last stop) if not already served by that line
 # 10 DONE a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
@@ -23,6 +23,31 @@ begin
 return (select max(stop_index) from stops_at where stops_at.line_name = line_name);
 end//
 delimiter ;
+
+#################################################################################################
+
+# A procedure that gets the coordinates of the last stop of a line
+drop procedure if exists LastStopCoordinates;
+delimiter //
+create procedure LastStopCoordinates(in line_name varchar(4), out last_stop_latitude char(9), out last_stop_longitude char(9))
+begin
+select latitude into last_stop_latitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = (select LastStopIndex(line_name));
+select longitude into last_stop_longitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = (select LastStopIndex(line_name));
+end//
+delimiter ;
+
+#################################################################################################
+
+# A function that tells us whether a stop is served by some line
+drop function if exists StopServedByLine;
+delimiter //
+create function StopServedByLine(stop_latitude char(9), stop_longitude char(9), line_name varchar(4)) returns boolean
+begin
+return exists (select * from stops_at where stops_at.line_name = line_name and stops_at.latitude = stop_latitude and stops_at.longitude = stop_longitude);
+end//
+delimiter ;
+
+select StopServedByLine("55.846501", "12.414829", "500S") as servedByLine;
 
 #################################################################################################
 
@@ -81,36 +106,26 @@ stop_index = 1;
 #################################################################################################
 
 # 4 Show the name of the bus stop served by most lines.
-# As coordinates match in bus_stop and stops_at we use natural join and then count(stop_name) to find the most used stops. which we named most_used in this example.
-select stop_name, count(stop_name) as most_used 
-from bus_stop natural join stops_at 
+# We count the occurance of each distinct stop name, order descending and limit to one result.
+select stop_name, count(stop_name) as served_by_lines from bus_stop natural join stops_at 
 group by stop_name 
-order by most_used desc;
-# Then we add a limit of 1 to only get the most used.
-  
-#code
-select stop_name, count(stop_name) as most_used 
-from Bus_stop natural join stops_at 
-group by stop_name 
-order by most_used desc limit 1;
+order by served_by_lines desc limit 1;
   
 #################################################################################################
   
 # 5 For each line, show the ID of the passenger who took the ride that lasted longer.
-#code
 select card_id, line_name, max(timediff(end_time, start_time)) as duration 
-from bus_ride 
-group by line_name;
+from bus_ride group by line_name;
 
 #################################################################################################
 
 # 6 Show the ID of the passengers who never took a bus line more than once per day.
-#I have grouped by card_id even though it is the only thing shown to order card_id numerically
-#code
-select CAST(start_time as date) as date, card_id 
-from bus_ride 
-group by CAST(start_time as date), card_id 
-having count(card_id) = 1;
+# We are not quite sure how to interpret this question, since it could either mean that multiple bus rides on different lines per day are included or not.
+# We just decided to answer both questions.
+
+# This query finds the ids of passengers who never takes more than one bus ride on the same line per day
+
+# This query finds the ids of passengers who never takes more than one bus ride per day. Note that it also shows a meaningless date
 
   
 #################################################################################################
@@ -142,31 +157,6 @@ bus_ride.last_stop_longitude = bus_stop.longitude;
 
 #################################################################################################
 
-# A procedure that gets the coordinates of the last stop of a line
-drop procedure if exists LastStopCoordinates;
-delimiter //
-create procedure LastStopCoordinates(in line_name varchar(4), out last_stop_latitude char(9), out last_stop_longitude char(9))
-begin
-select latitude into last_stop_latitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = (select LastStopIndex(line_name));
-select longitude into last_stop_longitude from stops_at where stops_at.line_name = line_name and stops_at.stop_index = (select LastStopIndex(line_name));
-end//
-delimiter ;
-
-#################################################################################################
-
-# A function that tells us whether a stop is served by some line
-drop function if exists StopServedByLine;
-delimiter //
-create function StopServedByLine(stop_latitude char(9), stop_longitude char(9), line_name varchar(4)) returns boolean
-begin
-return exists (select * from stops_at where stops_at.line_name = line_name and stops_at.latitude = stop_latitude and stops_at.longitude = stop_longitude);
-end//
-delimiter ;
-
-select StopServedByLine("55.846501", "12.414829", "500S") as servedByLine;
-
-#################################################################################################
-
 # 8 a function that takes two stops and shows how many liens serve both stops
 
 #################################################################################################
@@ -191,21 +181,32 @@ call AddStopToLine("300S", "55.715321", "12.337132");
 #################################################################################################
 
 # 10 a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
-#Checks whether the latitude/longitude is the same for the start/end stop and uses our function 'StopServedByLine' to check if the stop is on that particular line. Though that is actually not needed as foreign 
-#key constrains prevent inserting coordinates in Bus_ride that is not served by the concerning line.
-#Only works if the function "# A function that tells us whether a stop is served by some line" is created. Tested with:
-insert into bus_ride values('3232332323', '500S', '2024-11-14 13:50:00', '2024-11-14 13:55:00', '55.826205', '12.319242', '55.826205', '12.319242');
 
-#code
-drop trigger if exists wrongstop;
+drop trigger if exists BusRide_Before_Insert;
 delimiter //
-create trigger wrongstop
-before insert on bus_ride for each row
+create trigger BusRide_Before_Insert before insert on bus_ride for each row
 begin
- if (new.first_stop_latitude = new.last_stop_latitude and new.first_stop_longitude = new.last_stop_longitude)
- or StopServedByLine(new.last_stop_latitude, new.first_stop_longitude, new.line_name) 
- then signal sqlstate "HY000" set mysql_errno = 1525, message_text = "Cannot start and end a ride on the same stop, or at a stop not served by that line.";
- end if;
- end //
- delimiter ;
+if (new.first_stop_latitude = new.last_stop_latitude and new.first_stop_longitude = new.last_stop_longitude) then
+	signal sqlstate "HY000" set mysql_errno = 1525, message_text = "ride can't start and stop at the same bus stop";
+end if;
+if not StopServedByLine(new.first_stop_latitude, new.first_stop_longitude, new.line_name) then 
+	signal sqlstate "HY000" set mysql_errno = 1525, message_text = "first stop is not served by this line";
+end if;
+if not StopServedByLine(new.last_stop_latitude, new.last_stop_longitude, new.line_name) then 
+	signal sqlstate "HY000" set mysql_errno = 1525, message_text = "last stop is not served by this line";
+end if;
+end //
+delimiter ;
+
+# this should fail because first and last stop are the same
+insert into bus_ride (card_id, line_name, start_time, end_time, first_stop_latitude, first_stop_longitude, last_stop_latitude, last_stop_longitude) values
+("1234512345", "500S", "2024-11-13 12:00:00", "2024-11-13 12:10:00", "55.726027", "12.531202", "55.726027", "12.531202");
+
+# this should fail because first stop is not served by this line
+insert into bus_ride (card_id, line_name, start_time, end_time, first_stop_latitude, first_stop_longitude, last_stop_latitude, last_stop_longitude) values
+("1234512345", "500S", "2024-11-13 12:00:00", "2024-11-13 12:10:00", "55.695909", "12.314104", "55.726027", "12.531202"); # first stop is susie st
+
+# this should fail because last stop is not served by this line
+insert into bus_ride (card_id, line_name, start_time, end_time, first_stop_latitude, first_stop_longitude, last_stop_latitude, last_stop_longitude) values
+("1234512345", "500S", "2024-11-13 12:00:00", "2024-11-13 12:10:00", "55.726027", "12.531202", "55.695909", "12.314104"); # last stop is susie st
 
