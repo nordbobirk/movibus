@@ -5,13 +5,11 @@ use movibus;
 # 3 DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
 # 4 DONE Show the name of the bus stop served by most lines.
 # 5 DONE For each line, show the ID of# 3 Show the ID of the passengers who took a ride from the first stop of a given line
-# 6 Show the ID of the passengers who never took a bus line more than once per day.
+# 6 DONE Show the ID of the passengers who never took a bus line more than once per day.
 # 7 DONE Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
 # 8 DONE a function that takes two stops and shows how many liens serve both stops
 # 9 DONE a procedure that given a line and stop adds the stop to that line (after the last stop) if not already served by that line
 # 10 DONE a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
-
-# illustrative examples of all of the above
 
 #################################################################################################
 
@@ -88,6 +86,24 @@ insert into stops_at (line_name, stop_index, latitude, longitude) values ("350A"
 #################################################################################################
 
 # 2 table modification examples for insert/update/delete
+
+# example of adding a passenger
+insert into passenger (card_id, email, first_name, last_name, street_name, civic_number, zip_code, country) values
+	('0000000000', 'nullnullsen@null.com', 'null', 'nullsen', 'Some road', '10', '2480', 'Nulland');
+
+# example of updating a passenger
+update passenger set first_name = "nully" where card_id = "0000000000";
+
+# example of adding a bus ride for the above passenger
+insert into bus_ride (card_id, line_name, start_time, end_time, first_stop_latitude, first_stop_longitude, last_stop_latitude, last_stop_longitude) values
+("0000000000", "500S", "2024-11-29 12:00:00", "2024-11-29 12:10:00", "55.726027", "12.531202", "55.846501", "12.414829");
+
+# example of deleting passenger
+delete from passenger where card_id = "0000000000";
+
+# to demonstrate the cascading delete referential action on the card_id foreign key on bus_ride we can see from the below query
+# that the bus_ride we just added has also been deleted
+select card_id from bus_ride;
 
 #################################################################################################
 
