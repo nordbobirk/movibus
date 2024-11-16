@@ -139,8 +139,9 @@ from bus_ride group by line_name;
 
 # this query finds the passengers who never ride the bus more than once per day
 
-select distinct card_id from passenger as p where not exists 
-(select 1 from bus_ride as br where br.card_id = p.card_id group by cast(start_time as date) having count(*) > 1);
+select distinct card_id, count(*) as rides_per_day from bus_ride as br natural join passenger
+group by first_name, card_id, cast(start_time as date) having rides_per_day = 1
+order by rides_per_day desc;
   
 #################################################################################################
 
@@ -232,4 +233,3 @@ insert into bus_ride (card_id, line_name, start_time, end_time, first_stop_latit
 # this should fail because last stop is not served by this line
 insert into bus_ride (card_id, line_name, start_time, end_time, first_stop_latitude, first_stop_longitude, last_stop_latitude, last_stop_longitude) values
 ("1234512345", "500S", "2024-11-13 12:00:00", "2024-11-13 12:10:00", "55.726027", "12.531202", "55.695909", "12.314104"); # last stop is susie st
-
