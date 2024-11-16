@@ -1,6 +1,6 @@
 use movibus;
 
-# 1 triggers to handle constraints on index in StopsAt for insert/update/delete queries
+# 1 Triggers to handle indexes of bus stops
 # 2 table modification examples for insert/update/delete
 # 3 DONE Show the ID of the passengers who took a ride from the first stop of the line taken.
 # 4 DONE Show the name of the bus stop served by most lines.
@@ -15,7 +15,50 @@ use movibus;
 
 #################################################################################################
 
-# 1 triggers to handle constraints on index in StopsAt for insert/update/delete queries
+# A function that gets the index of the last stop of a line
+drop function if exists LastStopIndex;
+delimiter //
+create function LastStopIndex(line_name varchar(4)) returns int
+begin
+return (select max(stop_index) from stops_at where stops_at.line_name = line_name);
+end//
+delimiter ;
+
+#################################################################################################
+
+# 1 Triggers to handle indexes of bus stops
+
+# We don't write a trigger to handle deleting bus stops in a line, because we assume in this project that we would never do that. 
+# We do need a triger to move up the indexes of stops when inserting a stop in the middle of a line
+
+drop trigger if exists StopsAt_Before_Insert;
+delimiter // 
+create trigger StopsAt_Before_Insert before insert on stops_at for each row
+begin
+declare last_stop_index int;
+select LastStopIndex(new.line_name) into last_stop_index;
+if new.stop_index <= 0 then
+	signal sqlstate "HY000" set mysql_errno = 1525, message_text = "index must be a positive integer";
+end if;
+if new.stop_index <= last_stop_index then
+	signal sqlstate "HY000" set mysql_errno = 1525, message_text = "cant insert into the middle of the bus line";
+end if;
+if new.stop_index > (last_stop_index + 1) then
+	set new.stop_index = (last_stop_index + 1);
+end if;
+end//
+delimiter ;
+
+# this should fail because the index is negative
+insert into stops_at (line_name, stop_index, latitude, longitude) values ("350A", -1, "55.824893", "12.220631");
+
+# this should change the index to equal the last index plus one
+insert into stops_at (line_name, stop_index, latitude, longitude) values ("350A", 1000, "55.824893", "12.220631");
+# which can be verified by running this
+select * from stops_at natural join bus_stop where line_name = "350A";
+
+# this should fail because the index is not after the last current stop index
+insert into stops_at (line_name, stop_index, latitude, longitude) values ("350A", 5, "55.695080", "12.314077");
 
 #################################################################################################
 
@@ -96,17 +139,6 @@ left join bus_ride on bus_ride.first_stop_latitude = bus_stop.latitude and
 bus_ride.first_stop_longitude = bus_stop.longitude or
 bus_ride.last_stop_latitude = bus_stop.latitude and 
 bus_ride.last_stop_longitude = bus_stop.longitude;
-
-#################################################################################################
-
-# A function that gets the index of the last stop of a line
-drop function if exists LastStopIndex;
-delimiter //
-create function LastStopIndex(line_name varchar(4)) returns int
-begin
-return (select max(stop_index) from stops_at where stops_at.line_name = line_name);
-end//
-delimiter ;
 
 #################################################################################################
 
