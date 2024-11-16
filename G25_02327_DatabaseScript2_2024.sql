@@ -120,13 +120,11 @@ from bus_ride group by line_name;
 #################################################################################################
 
 # 6 Show the ID of the passengers who never took a bus line more than once per day.
-# We are not quite sure how to interpret this question, since it could either mean that multiple bus rides on different lines per day are included or not.
-# We just decided to answer both questions.
 
-# This query finds the ids of passengers who never takes more than one bus ride on the same line per day
+# this query finds the passengers who never ride the bus more than once per day
 
-# This query finds the ids of passengers who never takes more than one bus ride per day. Note that it also shows a meaningless date
-
+select distinct card_id from passenger as p where not exists 
+(select 1 from bus_ride as br where br.card_id = p.card_id group by cast(start_time as date) having count(*) > 1);
   
 #################################################################################################
 
