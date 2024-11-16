@@ -15,16 +15,16 @@ use movibus;
 #################################################################################################
 
 # 3 Show the ID of the passengers who took a ride from the first stop of a given line
-# we demonstrate this query with the bus line 350A
-set @q1_line_name = "350A";
 
 # here we use an inner join and NOT natural join, because attributes that are conceptually the same have different names
-select card_id from bus_ride join stops_at where 
+select card_id, bus_ride.line_name from bus_ride join stops_at where 
 bus_ride.line_name = stops_at.line_name and 
-bus_ride.line_name = @q1_line_name and 
 first_stop_latitude = latitude and 
 first_stop_longitude = longitude and
 stop_index = 1;
+
+# this query can be modified to find the passengers who took a ride from the first stop of only one line by adding a predicate to the where clause thus
+# and bus_ride.line_name = LINE_NAME (where LINE_NAME is the desired line)
 
 #################################################################################################
 
