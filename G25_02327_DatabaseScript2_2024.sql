@@ -6,9 +6,9 @@ use movibus;
 # 4 DONE Show the name of the bus stop served by most lines.
 # 5 DONE For each line, show the ID of# 3 Show the ID of the passengers who took a ride from the first stop of a given line
 # 6 Show the ID of the passengers who never took a bus line more than once per day.
-# 7 Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
-# 8 a function that takes two stops and shows how many liens serve both stops
-# 9 a procedure that given a line and stop adds the stop to that line (after the last stop) if not already served by that line
+# 7 DONE Show the name of the bus stops that are never used, that is, they are neither the start nor the end stop for any ride.
+# 8 DONE a function that takes two stops and shows how many liens serve both stops
+# 9 DONE a procedure that given a line and stop adds the stop to that line (after the last stop) if not already served by that line
 # 10 DONE a trigger that prevents inserting a ride starting and ending at the same stop or at a stop not served by that line
 
 # illustrative examples of all of the above
@@ -170,17 +170,22 @@ drop procedure if exists AddStopToLine;
 delimiter //
 create procedure AddStopToLine(in line_name varchar(4), in stop_latitude char(9), in stop_longitude char(9))
 begin
-declare last_stop_index int;
-select LastStopIndex(line_name) into last_stop_index;
-if StopServedByLine(stop_latitude, stop_longitude, line_name)
-then signal sqlstate "HY000" set mysql_errno = 1525, message_text = "stop already served by line";
-end if;
+	declare last_stop_index int;
+	select LastStopIndex(line_name) into last_stop_index;
+	if StopServedByLine(stop_latitude, stop_longitude, line_name)
+		then signal sqlstate "HY000" set mysql_errno = 1525, message_text = "stop already served by line";
+	end if;
 insert stops_at (latitude, longitude, stop_index, line_name) values (stop_latitude, stop_longitude, (last_stop_index + 1), line_name);
 end//
 delimiter ;
 
-select * from stops_at natural join bus_stop order by line_name asc, stop_index asc;
-call AddStopToLine("300S", "55.715321", "12.337132");
+# this should fail because stop is already served by line
+call AddStopToLine("500S", "55.726027", "12.531202");
+
+# this should succeed because stop is not served by line
+call AddStopToLine("500S", "55.846256", "12.414063");
+# which can be verified by running
+select * from stops_at where line_name = "500S";
 
 #################################################################################################
 
