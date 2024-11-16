@@ -138,9 +138,30 @@ latitude not in (select last_stop_latitude from bus_ride) and
 longitude not in (select first_stop_longitude from bus_ride) and
 longitude not in (select last_stop_longitude from bus_ride);
 
+# Alternative solution
+select stop_name from bus_stop where stop_name not in 
+(select stop_name from bus_ride join bus_stop on (
+	first_stop_latitude = latitude and first_stop_longitude = longitude) or
+    (last_stop_latitude = latitude and last_stop_longitude = longitude));
+    
+# Running either of the above queries returns the three stops that are never used, Pete Street, Ben Street and Janice Street
+
 #################################################################################################
 
-# 8 a function that takes two stops and shows how many liens serve both stops
+# 8 a function that takes two stops and shows how many lines serve both stops
+
+drop function if exists LinesServeStops;
+delimiter //
+create function LinesServeStops(lat1 char(9), long1 char(9), lat2 char(9), long2 char(9)) returns int
+begin
+return (select count(distinct line_name) from stops_at where line_name in 
+	(select distinct line_name from stops_at where latitude = lat1 and longitude = long1) and 
+	line_name in (select distinct line_name from stops_at where latitude = lat2 and longitude = long2));
+end//
+delimiter ;
+
+# example
+select LinesServeStops("55.726027", "12.531202", "55.838776", "12.476234");
 
 #################################################################################################
 
